@@ -43,6 +43,9 @@ pub enum HeaderMode {
     /// Only metadata that is directly relevant to the identity of a file will
     /// be included. In particular, ownership and mod/access times are excluded.
     Deterministic,
+
+    /// Same as complete, but timestamps are set deterministically
+    TimestampDeterministic,
 }
 
 /// Representation of the header of an entry in an archive
@@ -751,6 +754,12 @@ impl Header {
         match mode {
             HeaderMode::Complete => {
                 self.set_mtime(meta.mtime() as u64);
+                self.set_uid(meta.uid() as u64);
+                self.set_gid(meta.gid() as u64);
+                self.set_mode(meta.mode() as u32);
+            }
+            HeaderMode::TimestampDeterministic => {
+                self.set_mtime(DETERMINISTIC_TIMESTAMP);
                 self.set_uid(meta.uid() as u64);
                 self.set_gid(meta.gid() as u64);
                 self.set_mode(meta.mode() as u32);

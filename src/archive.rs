@@ -191,6 +191,12 @@ impl<R: Seek + Read> Archive<R> {
             _ignored: marker::PhantomData,
         })
     }
+
+    /// Seeks the inner to its start. Invalidates all held objects.
+    pub fn reset(&mut self) {
+        self.inner.obj.get_mut().seek(SeekFrom::Start(0)).unwrap();
+        *self.inner.pos.get_mut() = 0;
+    }
 }
 
 impl Archive<dyn Read + '_> {
